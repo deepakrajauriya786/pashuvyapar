@@ -23,7 +23,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.initState();
 
     _controller = VideoPlayerController.networkUrl(
-      Uri.parse(widget.url),
+      Uri.parse(VideoURL+widget.url),
     )..initialize().then((_) {
         setState(() {});
       });

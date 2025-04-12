@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "620233611456",
+    "project_id": "pashu-vyapar-4b3a2",
+    "storage_bucket": "pashu-vyapar-4b3a2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:620233611456:android:7082cc5ce888773b3e7525",
+        "android_client_info": {
+          "package_name": "com.pashuvyapar.pashuvyapar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbS6WWid0eF0qoZOp2nuf-gHAjSq_Fwic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

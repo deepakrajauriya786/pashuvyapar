@@ -1,0 +1,2 @@
+D:/tavela/tabela_wala/tabela_wala/android/app/.cxx/RelWithDebInfo/3e464q6y/x86/CMakeFiles/edit_cache.dir
+D:/tavela/tabela_wala/tabela_wala/android/app/.cxx/RelWithDebInfo/3e464q6y/x86/CMakeFiles/rebuild_cache.dir

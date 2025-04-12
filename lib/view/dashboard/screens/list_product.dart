@@ -1,23 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:tabela_wala/const/color.dart';
-import 'package:tabela_wala/const/screen_sizes.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher_string.dart';
-
 // Remove unused video_player import if VideoPlayerScreen handles it
 // import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:tabela_wala/const/color.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:video_player/video_player.dart';
+
 import '../../../const/app_sizes.dart';
-import '../../../const/dummy_data.dart';
-import '../../notifications/screens/notification_screen.dart';
-import '../../sell/screens/sell_screen_new.dart';
-import '../../sell/screens/video_play.dart'; // Assuming this contains VideoPlayerScreen
-import '../widgets/banner_carousel.dart';
+import '../../sell/screens/video_play.dart';
 import '../widgets/custom_header.dart';
 import 'bottom_navigation_screen.dart';
 
@@ -81,7 +78,6 @@ class _HomeScreenState extends State<ListScreen> {
       return Future.error("Error Fetching Data!");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -189,20 +185,45 @@ class _AnimalCardItemState extends State<AnimalCardItem> {
   // Each card item now manages its own PageController
   late PageController _pageController;
 
+  late List<dynamic> videosLnk = [];
+  VideoPlayerController? _videoController;
+
+  void _initializeVideoControllerIfNeeded() async {
+    for (int i = 0; i < videosLnk.length; i++) {
+      if (videosLnk[i].toString().contains(".mp4")) {
+        _videoController?.dispose();
+        _videoController =
+            VideoPlayerController.network(VideoURL + videosLnk[i].toString());
+
+        await _videoController!.initialize();
+        _videoController!.setLooping(true);
+
+        if (mounted) {
+          setState(() {});
+        }
+      } else {
+        _videoController?.dispose();
+        _videoController = null;
+        setState(() {});
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    videosLnk = widget.data['images'];
+    _initializeVideoControllerIfNeeded();
   }
 
   @override
   void dispose() {
+    _videoController!.dispose();
     _pageController
         .dispose(); // Dispose the controller when the widget is removed
     super.dispose();
   }
-
-
 
   Future<List<dynamic>> deleteProduct(String p_id) async {
     try {
@@ -211,11 +232,9 @@ class _AnimalCardItemState extends State<AnimalCardItem> {
       final response = await http.get(Uri.parse(
           "${AppSizes.BASEURL}cart_delete.php?p_id=${p_id.toString()}"));
       if (response.statusCode == 200) {
-
         var jsondata = jsonDecode(response.body.toString());
 
-        if (jsondata[0]['message']=="1") {
-
+        if (jsondata[0]['message'] == "1") {
           Fluttertoast.showToast(msg: "Delete Successfully");
           Navigator.pushReplacement(
               context,
@@ -373,7 +392,7 @@ class _AnimalCardItemState extends State<AnimalCardItem> {
                           print(
                               "Rendering Video: $VideoURL$mediaUrl"); // Assuming VideoURL base
                           return VideoPlayerScreen(
-                              mediaUrl,mediaItems[0].toString()); // Pass the full or relative URL as needed by VideoPlayerScreen
+                              controller: _videoController!,); // Pass the full or relative URL as needed by VideoPlayerScreen
                         } else {
                           // Assume it's an image
                           print(
@@ -613,8 +632,7 @@ class _AnimalCardItemState extends State<AnimalCardItem> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(20)),
+                    color: Colors.red, borderRadius: BorderRadius.circular(20)),
                 child: Center(
                     child: const Text("Sold Out",
                         style: TextStyle(

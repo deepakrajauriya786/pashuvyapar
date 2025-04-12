@@ -1,16 +1,18 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:tabela_wala/const/color.dart';
-import 'package:tabela_wala/const/screen_sizes.dart';
-import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher_string.dart';
 
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 // Remove unused video_player import if VideoPlayerScreen handles it
 // import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:tabela_wala/const/color.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:video_player/video_player.dart';
+
 import '../../../const/app_sizes.dart';
 import '../../../const/dummy_data.dart';
 import '../../notifications/screens/notification_screen.dart';
@@ -61,15 +63,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<List<dynamic>> fetchProduct() async {
     try {
-      String state='';
-      if(locationController != null){
-        state=locationController.toString();
-      }else{
-        state='';
+      String state = '';
+      if (locationController != null) {
+        state = locationController.toString();
+      } else {
+        state = '';
       }
 
-      final response =
-          await http.get(Uri.parse("${AppSizes.BASEURL}product_fetch.php?state=${state.toString()}"));
+      final response = await http.get(Uri.parse(
+          "${AppSizes.BASEURL}product_fetch.php?state=${state.toString()}"));
       if (response.statusCode == 200) {
         print("Product data fetched: ${response.body}"); // More informative log
         return jsonDecode(response.body);
@@ -168,54 +170,57 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                     Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: locationController,
-                        items: indianStates
-                            .map((animal) => DropdownMenuItem(
-                          value: animal["name"],
-                          child: Row(
-                            children: [
-                              Text(animal["name"]!),
-                            ],
-                          ),
-                        ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            locationController = value;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          border:InputBorder.none,
+                    Expanded(
+                        child: DropdownButtonFormField<String>(
+                      value: locationController,
+                      items: indianStates
+                          .map((animal) => DropdownMenuItem(
+                                value: animal["name"],
+                                child: Row(
+                                  children: [
+                                    Text(animal["name"]!),
+                                  ],
+                                ),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          locationController = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                      ),
+                    )
+                        // TextField(
+                        //   decoration: InputDecoration(
+                        //     hintText: "Search Animals by Location...",
+                        //     hintStyle: TextStyle(fontSize: 14),
+                        //     border: InputBorder.none,
+                        //     contentPadding: EdgeInsets.symmetric(
+                        //         horizontal: 8, vertical: 12), // Adjusted padding
+                        //   ),
+                        // ),
                         ),
-                      )
-                      // TextField(
-                      //   decoration: InputDecoration(
-                      //     hintText: "Search Animals by Location...",
-                      //     hintStyle: TextStyle(fontSize: 14),
-                      //     border: InputBorder.none,
-                      //     contentPadding: EdgeInsets.symmetric(
-                      //         horizontal: 8, vertical: 12), // Adjusted padding
-                      //   ),
-                      // ),
-                    ),
                     // Filter Button aligned with TextField height
                     InkWell(
                       // Use InkWell for tap feedback
                       onTap: () {
-
                         FutureBuilder<List<dynamic>>(
                           future: fetchProduct(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return const Center(
-                                  child: CircularProgressIndicator(color: darkbrown));
+                                  child: CircularProgressIndicator(
+                                      color: darkbrown));
                             } else if (snapshot.hasError) {
                               print(
                                   "Error in FutureBuilder: ${snapshot.error}"); // Log error
-                              return Center(child: Text("Error: ${snapshot.error}"));
-                            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                              return Center(
+                                  child: Text("Error: ${snapshot.error}"));
+                            } else if (snapshot.hasData &&
+                                snapshot.data!.isNotEmpty) {
                               final products = snapshot.data!;
                               return ListView.builder(
                                 shrinkWrap: true,
@@ -229,7 +234,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                             } else {
-                              return const Center(child: Text('No Animals Found'));
+                              return const Center(
+                                  child: Text('No Animals Found'));
                             }
                           },
                         );
@@ -251,8 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             bottomRight: Radius.circular(8),
                           ),
                         ),
-                        child: const Icon(Icons.search,
-                            color: Colors.white),
+                        child: const Icon(Icons.search, color: Colors.white),
                       ),
                     ),
                   ],
@@ -371,14 +376,41 @@ class _AnimalCardItemState extends State<AnimalCardItem> {
   // Each card item now manages its own PageController
   late PageController _pageController;
 
+  late List<dynamic> videosLnk = [];
+  VideoPlayerController? _videoController;
+
+  void _initializeVideoControllerIfNeeded() async {
+    for (int i = 0; i < videosLnk.length; i++) {
+      if (videosLnk[i].toString().contains(".mp4")) {
+        _videoController?.dispose();
+        _videoController =
+            VideoPlayerController.network(VideoURL + videosLnk[i].toString());
+
+        await _videoController!.initialize();
+        _videoController!.setLooping(true);
+
+        if (mounted) {
+          setState(() {});
+        }
+      } else {
+        _videoController?.dispose();
+        _videoController = null;
+        setState(() {});
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    videosLnk = widget.data['images'];
+    _initializeVideoControllerIfNeeded();
   }
 
   @override
   void dispose() {
+    _videoController!.dispose();
     _pageController
         .dispose(); // Dispose the controller when the widget is removed
     super.dispose();
@@ -443,7 +475,9 @@ class _AnimalCardItemState extends State<AnimalCardItem> {
     final itemData = widget.data;
     final List<dynamic> mediaItems = itemData['images'] as List<dynamic>? ??
         []; // Handle null or non-list case
-
+    log((mediaItems.toString()));
+log(ImageURL);
+log(VideoURL);
     return Card(
       margin: const EdgeInsets.only(bottom: 25),
       elevation: 2,
@@ -517,7 +551,8 @@ class _AnimalCardItemState extends State<AnimalCardItem> {
                           print(
                               "Rendering Video: $VideoURL$mediaUrl"); // Assuming VideoURL base
                           return VideoPlayerScreen(
-                              mediaUrl,mediaItems[0].toString()); // Pass the full or relative URL as needed by VideoPlayerScreen
+                            controller: _videoController!,
+                          ); // Pass the full or relative URL as needed by VideoPlayerScreen
                         } else {
                           // Assume it's an image
                           print(

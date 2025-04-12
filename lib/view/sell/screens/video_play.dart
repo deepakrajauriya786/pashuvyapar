@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../const/app_sizes.dart';
-
 class VideoPlayerScreen extends StatefulWidget {
-  final String url;
-  final String mediaUrl;
-  const VideoPlayerScreen(this.url, this.mediaUrl, {super.key});
+  final VideoPlayerController controller;
+
+  const VideoPlayerScreen({super.key, required this.controller});
 
   @override
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
@@ -21,12 +18,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void initState() {
     super.initState();
-
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse(VideoURL+widget.url),
-    )..initialize().then((_) {
-        setState(() {});
-      });
+    _controller = widget.controller;
 
     _controller.addListener(() {
       final bool isPlaying = _controller.value.isPlaying;
@@ -45,11 +37,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         });
       }
     });
+
+    if (_controller.value.isInitialized) {
+      _controller.play();
+      _controller.setLooping(true);
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
@@ -76,37 +72,33 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: _controller.value.isInitialized
-            ? Stack(
-                alignment: Alignment.center,
-                children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
+    return _controller.value.isInitialized
+        ? Stack(
+            alignment: Alignment.center,
+            children: [
+              AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
+              ),
+              GestureDetector(
+                onTap: _togglePlayPause,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black26,
                   ),
-                  GestureDetector(
-                    onTap: _togglePlayPause,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black26,
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: Icon(
-                        (_controller.value.isPlaying && !_isVideoEnded)
-                            ? Icons.pause
-                            : Icons.play_arrow,
-                        size: 40,
-                        color: Colors.white,
-                      ),
-                    ),
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(
+                    (_controller.value.isPlaying && !_isVideoEnded)
+                        ? Icons.pause
+                        : Icons.play_arrow,
+                    size: 40,
+                    color: Colors.white,
                   ),
-                ],
-              )
-            : CircularProgressIndicator(),
-      ),
-    );
+                ),
+              ),
+            ],
+          )
+        : const Center(child: CircularProgressIndicator());
   }
 }

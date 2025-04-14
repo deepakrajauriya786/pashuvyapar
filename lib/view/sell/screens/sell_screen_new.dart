@@ -146,7 +146,7 @@ class _SellScreenNewState extends State<SellScreenNew> {
 
     // Resize and encode as JPEG with quality 80
     final img.Image resizedImage = img.copyResize(image, width: 500); // Adjust width as needed
-    final Uint8List compressedBytes = img.encodeJpg(resizedImage, quality: 60);
+    final Uint8List compressedBytes = img.encodeJpg(resizedImage, quality: 80);
 
     final tempDir = await getTemporaryDirectory();
     final compressedFile = File('${tempDir.path}/compressed_${file.path.split('/').last}');
@@ -200,12 +200,12 @@ class _SellScreenNewState extends State<SellScreenNew> {
       return;
     }
 
-    if (_video == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please select images")),
-      );
-      return;
-    }
+    // if (_video == null) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text("Please select images")),
+    //   );
+    //   return;
+    // }
 
     setState(() {
       isLoading = true;
@@ -221,7 +221,7 @@ class _SellScreenNewState extends State<SellScreenNew> {
     request.files.add(await http.MultipartFile.fromPath('img1', _image1!.path));
     // request.files.add(await http.MultipartFile.fromPath('img2', _image2!.path));
     // Add the video file
-    request.files.add(await http.MultipartFile.fromPath('video', _video!.path)); // New video field
+    // request.files.add(await http.MultipartFile.fromPath('video', _video!.path)); // New video field
 
     // Add the user ID
     request.fields['u_id'] = userId.toString();
@@ -1126,26 +1126,26 @@ class _SellScreenNewState extends State<SellScreenNew> {
         //         : Text("Select Image 3 "),
         //   ],
         // ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          // mainAxisSize: MainAxisSize.max,
-          children: [
-            ElevatedButton(
-              onPressed: (){
-                setState(() {
-                  isLoadingVideo=true;
-                });
-                _pickVideo();
-              },
-              child: const Text("Upload Video"),
-            ),
-            const SizedBox(height: 20),
-            _video != null
-                ? Text("Video Selected !"
-              ,style: TextStyle(color: Colors.green,fontSize: 18,fontWeight: FontWeight.bold),)
-                : isLoadingVideo ? CircularProgressIndicator():Text("Select Video..."),
-          ],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //   // mainAxisSize: MainAxisSize.max,
+        //   children: [
+        //     ElevatedButton(
+        //       onPressed: (){
+        //         setState(() {
+        //           isLoadingVideo=true;
+        //         });
+        //         _pickVideo();
+        //       },
+        //       child: const Text("Upload Video"),
+        //     ),
+        //     const SizedBox(height: 20),
+        //     _video != null
+        //         ? Text("Video Selected !"
+        //       ,style: TextStyle(color: Colors.green,fontSize: 18,fontWeight: FontWeight.bold),)
+        //         : isLoadingVideo ? CircularProgressIndicator():Text("Select Video..."),
+        //   ],
+        // ),
       ]).marginSymmetric(horizontal: 20),
     ),)
     ;

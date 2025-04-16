@@ -52,7 +52,43 @@ class _HomeScreenState extends State<HomeScreen> {
     // data = fetchProduct();
     // REMOVE: Video controller initialization if not used directly here
     // _controller = VideoPlayerController.network(...) // Example
+
+    sendOtp();
   }
+
+  Future<String> sendOtp() async {
+    try {
+      print("otp send");
+
+      // Add query parameters to the URL
+      final String baseUrl = "https://dsapi.slkatyalassociates.com/api/Item";
+      final Map<String, String> queryParams = {
+        'BarcodeNo': 'W01180557',
+      };
+
+      final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
+
+      var response = await http.get(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+
+      print(response.body);
+      if (response.statusCode == 200) {
+        print("otp send");
+        return "success";
+      } else {
+        print("Failed!");
+        return "err";
+      }
+    } catch (e) {
+      print("Failed Server!");
+      return "err";
+    }
+  }
+
 
   @override
   void dispose() {

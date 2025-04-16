@@ -65,6 +65,7 @@ class _SellScreenNewState extends State<SellScreenNew> {
   File? _image;
   File? _image1;
   File? _image2;
+  File? _image3;
   File? _video;
   final ImagePicker _picker = ImagePicker();
 
@@ -175,15 +176,24 @@ class _SellScreenNewState extends State<SellScreenNew> {
     }
   }
 
-  // Future<void> _pickImage2() async {
-  //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-  //   if (pickedFile != null) {
-  //     File compressedFile = await compressImage(File(pickedFile.path));
-  //     setState(() {
-  //       _image2 = compressedFile;
-  //     });
-  //   }
-  // }
+  Future<void> _pickImage2() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File compressedFile = await compressImage(File(pickedFile.path));
+      setState(() {
+        _image2 = compressedFile;
+      });
+    }
+  }
+  Future<void> _pickImage3() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File compressedFile = await compressImage(File(pickedFile.path));
+      setState(() {
+        _image3 = compressedFile;
+      });
+    }
+  }
 
   Future<void> _uploadImage() async {
 
@@ -219,9 +229,9 @@ class _SellScreenNewState extends State<SellScreenNew> {
     // Add the image file
     request.files.add(await http.MultipartFile.fromPath('img', _image!.path));
     request.files.add(await http.MultipartFile.fromPath('img1', _image1!.path));
-    // request.files.add(await http.MultipartFile.fromPath('img2', _image2!.path));
+    request.files.add(await http.MultipartFile.fromPath('img2', _image2!.path));
     // Add the video file
-    // request.files.add(await http.MultipartFile.fromPath('video', _video!.path)); // New video field
+    request.files.add(await http.MultipartFile.fromPath('img3', _image3!.path)); // New video field
 
     // Add the user ID
     request.fields['u_id'] = userId.toString();
@@ -1108,24 +1118,41 @@ class _SellScreenNewState extends State<SellScreenNew> {
                 : Text("Select Image 2 "),
           ],
         ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //   // mainAxisSize: MainAxisSize.max,
-        //   children: [
-        //     ElevatedButton(
-        //       onPressed: _pickImage2,
-        //       child: const Text("Upload Image 3 "),
-        //     ),
-        //     const SizedBox(height: 20),
-        //     _image2 != null
-        //         ? Image.file(
-        //       _image2!,
-        //       height: 100,
-        //       width: 100,
-        //     )
-        //         : Text("Select Image 3 "),
-        //   ],
-        // ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // mainAxisSize: MainAxisSize.max,
+          children: [
+            ElevatedButton(
+              onPressed: _pickImage2,
+              child: const Text("Upload Image 3 "),
+            ),
+            const SizedBox(height: 20),
+            _image2 != null
+                ? Image.file(
+              _image2!,
+              height: 100,
+              width: 100,
+            )
+                : Text("Select Image 3 "),
+          ],
+        ),  Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // mainAxisSize: MainAxisSize.max,
+          children: [
+            ElevatedButton(
+              onPressed: _pickImage3,
+              child: const Text("Upload Image 4 "),
+            ),
+            const SizedBox(height: 20),
+            _image3 != null
+                ? Image.file(
+              _image3!,
+              height: 100,
+              width: 100,
+            )
+                : Text("Select Image 4 "),
+          ],
+        ),
         // Row(
         //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         //   // mainAxisSize: MainAxisSize.max,

@@ -14,6 +14,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../const/app_sizes.dart';
+import '../../sell/screens/YoutubeVideoPlayer.dart';
 import '../../sell/screens/video_play.dart';
 import '../widgets/custom_header.dart';
 import 'bottom_navigation_screen.dart';
@@ -388,11 +389,12 @@ class _AnimalCardItemState extends State<AnimalCardItem> {
                       pageSnapping: true,
                       itemBuilder: (context, index) {
                         final mediaUrl = mediaItems[index].toString();
-                        if (mediaUrl.endsWith(".mp4")) {
+                        if (mediaUrl.contains("youtube")) {
                           print(
                               "Rendering Video: $VideoURL$mediaUrl"); // Assuming VideoURL base
-                          return VideoPlayerScreen(
-                              controller: _videoController!,); // Pass the full or relative URL as needed by VideoPlayerScreen
+                          return YoutubeVideoPlayer(
+                            youtubeUrl: mediaUrl.toString(),
+                          ); // Pass the full or relative URL as needed by VideoPlayerScreen
                         } else {
                           // Assume it's an image
                           print(

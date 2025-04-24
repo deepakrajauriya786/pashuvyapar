@@ -16,6 +16,7 @@ import 'package:video_player/video_player.dart';
 import '../../../const/app_sizes.dart';
 import '../../../const/dummy_data.dart';
 import '../../notifications/screens/notification_screen.dart';
+import '../../sell/screens/YoutubeVideoPlayer.dart';
 import '../../sell/screens/sell_screen_new.dart';
 import '../../sell/screens/video_play.dart'; // Assuming this contains VideoPlayerScreen
 import '../widgets/banner_carousel.dart';
@@ -585,11 +586,11 @@ log(VideoURL);
                       pageSnapping: true,
                       itemBuilder: (context, index) {
                         final mediaUrl = mediaItems[index].toString();
-                        if (mediaUrl.contains(".mp4")) {
+                        if (mediaUrl.contains("youtube")) {
                           print(
                               "Rendering Video: $VideoURL$mediaUrl"); // Assuming VideoURL base
-                          return VideoPlayerScreen(
-                            controller: _videoController!,
+                          return YoutubeVideoPlayer(
+                            youtubeUrl: mediaUrl.toString(),
                           ); // Pass the full or relative URL as needed by VideoPlayerScreen
                         } else {
                           // Assume it's an image

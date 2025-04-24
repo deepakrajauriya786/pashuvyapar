@@ -11,7 +11,7 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:video_compress/video_compress.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
 import '../../../const/app_sizes.dart';
 import '../../../const/color.dart';
@@ -87,54 +87,54 @@ class _SellScreenNewState extends State<SellScreenNew> {
   // Max allowed duration (e.g., 30 seconds)
   final Duration maxDuration = Duration(seconds: 30);
 
-  Future<void> _pickVideo() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      File file = File(pickedFile.path);
-
-      // Initialize a temporary video player to get duration
-      VideoPlayerController tempController = VideoPlayerController.file(file);
-      await tempController.initialize();
-      Duration videoDuration = tempController.value.duration;
-
-      if (videoDuration > maxDuration) {
-        setState(() {
-          isLoadingVideo=false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Video is too long. Max duration is 30 seconds.')),
-        );
-        tempController.dispose();
-        return;
-      }
-
-      // Compress the video
-      final info = await VideoCompress.compressVideo(
-        file.path,
-        quality: VideoQuality.LowQuality,
-        deleteOrigin: false, // set to true to remove original file
-      );
-
-      if (info != null && info.file != null) {
-        setState(() {
-          _video = info.file;
-          setState(() {
-            isLoadingVideo=false;
-          });
-          // _controller = VideoPlayerController.file(_video!)
-          //   ..initialize().then((_) {
-          //     setState(() {});
-          //     _controller!.play();
-          //   });
-        });
-      }
-
-      tempController.dispose();
-    }
-  }
+  // Future<void> _pickVideo() async {
+  //   final ImagePicker _picker = ImagePicker();
+  //   final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
+  //
+  //   if (pickedFile != null) {
+  //     File file = File(pickedFile.path);
+  //
+  //     // Initialize a temporary video player to get duration
+  //     VideoPlayerController tempController = VideoPlayerController.file(file);
+  //     await tempController.initialize();
+  //     Duration videoDuration = tempController.value.duration;
+  //
+  //     if (videoDuration > maxDuration) {
+  //       setState(() {
+  //         isLoadingVideo=false;
+  //       });
+  //
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Video is too long. Max duration is 30 seconds.')),
+  //       );
+  //       tempController.dispose();
+  //       return;
+  //     }
+  //
+  //     // Compress the video
+  //     final info = await VideoCompress.compressVideo(
+  //       file.path,
+  //       quality: VideoQuality.LowQuality,
+  //       deleteOrigin: false, // set to true to remove original file
+  //     );
+  //
+  //     if (info != null && info.file != null) {
+  //       setState(() {
+  //         _video = info.file;
+  //         setState(() {
+  //           isLoadingVideo=false;
+  //         });
+  //         // _controller = VideoPlayerController.file(_video!)
+  //         //   ..initialize().then((_) {
+  //         //     setState(() {});
+  //         //     _controller!.play();
+  //         //   });
+  //       });
+  //     }
+  //
+  //     tempController.dispose();
+  //   }
+  // }
 
 
   Future<File> compressImage(File file) async {
@@ -208,6 +208,11 @@ class _SellScreenNewState extends State<SellScreenNew> {
         SnackBar(content: Text("Please select images")),
       );
       return;
+    }  if (_image2 == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please select images")),
+      );
+      return;
     }
 
     // if (_video == null) {
@@ -231,7 +236,7 @@ class _SellScreenNewState extends State<SellScreenNew> {
     request.files.add(await http.MultipartFile.fromPath('img1', _image1!.path));
     request.files.add(await http.MultipartFile.fromPath('img2', _image2!.path));
     // Add the video file
-    request.files.add(await http.MultipartFile.fromPath('img3', _image3!.path)); // New video field
+    // request.files.add(await http.MultipartFile.fromPath('img3', _image3!.path)); // New video field
 
     // Add the user ID
     request.fields['u_id'] = userId.toString();
@@ -1140,17 +1145,30 @@ class _SellScreenNewState extends State<SellScreenNew> {
           // mainAxisSize: MainAxisSize.max,
           children: [
             ElevatedButton(
-              onPressed: _pickImage3,
-              child: const Text("Upload Image 4 "),
+              onPressed: (){
+                final phoneNumber = "9131739457";
+                if (phoneNumber != null && phoneNumber.isNotEmpty) {
+                  // Ensure number format is correct for WA link (e.g., no +)
+                  launchUrlString(
+                      "https://wa.me/91$phoneNumber"); // Assuming +91 country code
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content:
+                        Text("WhatsApp number not available.")),
+                  );
+                }
+              },
+              child: const Text("Upload Video by Whatsapp "),
             ),
-            const SizedBox(height: 20),
-            _image3 != null
-                ? Image.file(
-              _image3!,
-              height: 100,
-              width: 100,
-            )
-                : Text("Select Image 4 "),
+            // const SizedBox(height: 20),
+            // _image3 != null
+            //     ? Image.file(
+            //   _image3!,
+            //   height: 100,
+            //   width: 100,
+            // )
+            //     : Text("Share video on Whatsapp"),
           ],
         ),
         // Row(

@@ -3,7 +3,6 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubeVideoPlayer extends StatefulWidget {
   final String youtubeUrl;
-
   const YoutubeVideoPlayer({super.key, required this.youtubeUrl});
 
   @override
@@ -16,6 +15,7 @@ class _YoutubeVideoPlayerState extends State<YoutubeVideoPlayer> {
 
   @override
   void initState() {
+    super.initState();
     final videoId = YoutubePlayer.convertUrlToId(widget.youtubeUrl);
     _controller = YoutubePlayerController(
       initialVideoId: videoId ?? '',
@@ -27,11 +27,9 @@ class _YoutubeVideoPlayerState extends State<YoutubeVideoPlayer> {
       ),
     )..addListener(() {
       if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
-        setState(() {}); // update UI when play/pause changes
+        setState(() {}); // Update UI when play/pause state changes
       }
     });
-
-    super.initState();
   }
 
   @override
@@ -53,18 +51,19 @@ class _YoutubeVideoPlayerState extends State<YoutubeVideoPlayer> {
       ),
       builder: (context, player) {
         return Stack(
+          alignment: Alignment.center,
           children: [
-            AbsorbPointer(
-              absorbing: !_controller.value.isPlaying,
-              child: player,
-            ),
+            player, // Show the player directly
             if (!_controller.value.isPlaying)
-              Center(
-                child: IconButton(
-                  icon: const Icon(Icons.play_circle_fill, size: 64, color: Colors.white),
-                  onPressed: () {
-                    _controller.play();
-                  },
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  _controller.play();
+                },
+                child: const Icon(
+                  Icons.play_circle_fill,
+                  size: 64,
+                  color: Colors.white,
                 ),
               ),
           ],

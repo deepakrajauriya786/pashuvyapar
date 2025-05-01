@@ -5,6 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:random_string/random_string.dart';
 import 'package:tabela_wala/const/screen_sizes.dart';
 import 'package:http/http.dart' as http;
 import 'dart:typed_data';
@@ -27,7 +28,8 @@ class SellScreenNew extends StatefulWidget {
 }
 
 class _SellScreenNewState extends State<SellScreenNew> {
-  @override
+
+
   final PageController _pageController = PageController();
   final TextEditingController priceController = TextEditingController();
   // final TextEditingController locationController = TextEditingController();
@@ -54,7 +56,7 @@ class _SellScreenNewState extends State<SellScreenNew> {
   String? selectedPregnantTypeMonth;
   List<String> availableselectedPregnantType = [];
 
-
+  String orderId='';
 
   double lactationValue = 5;
   double milkCapacity = 15;
@@ -68,6 +70,14 @@ class _SellScreenNewState extends State<SellScreenNew> {
   File? _image3;
   File? _video;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+     orderId = randomNumeric(8);
+  }
 
   // Method to pick video
   // Future<void> _pickVideo() async {
@@ -254,6 +264,7 @@ class _SellScreenNewState extends State<SellScreenNew> {
     request.fields['selectedVyaatTypeMonth'] = selectedVyaatTypeMonth.toString();
     request.fields['selectedPregnantType'] = selectedPregnantType.toString();
     request.fields['selectedPregnantTypeMonth'] = selectedPregnantTypeMonth.toString();
+    request.fields['orderId'] = orderId.toString();
 
     try {
       var response = await request.send();
@@ -1150,7 +1161,7 @@ class _SellScreenNewState extends State<SellScreenNew> {
                 if (phoneNumber != null && phoneNumber.isNotEmpty) {
                   // Ensure number format is correct for WA link (e.g., no +)
                   launchUrlString(
-                      "https://wa.me/91$phoneNumber"); // Assuming +91 country code
+                      "https://wa.me/91$phoneNumber?text=Order Id : $orderId"); // Assuming +91 country code
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

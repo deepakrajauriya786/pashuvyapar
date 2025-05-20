@@ -39,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // REMOVE: This controller is no longer needed here
   // late PageController _pageController;
   String? locationController;
+  String category='';
 
   // REMOVE: This controller and its initialization/dispose are likely handled within VideoPlayerScreen now
   // late VideoPlayerController _controller;
@@ -108,9 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         state = '';
       }
-
+      print("Product data fetched cate: ${category.toString()}");
       final response = await http.get(Uri.parse(
-          "${AppSizes.BASEURL}product_fetch.php?state=${state.toString()}"));
+          "${AppSizes.BASEURL}product_fetch.php?state=${state.toString()}&category=${category.toString()}"));
       if (response.statusCode == 200) {
         print("Product data fetched: ${response.body}"); // More informative log
         return jsonDecode(response.body);
@@ -326,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 191, // Set a fixed height for the carousel
                 child: BannerCarousel(), // Assuming BannerCarousel is defined
               ),
-              const SizedBox(height: 20), // Added spacing
+              // const SizedBox(height: 20), // Added spacing
 
               // --- Product List ---
               FutureBuilder<List<dynamic>>(
@@ -367,35 +368,43 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Helper widget for the animal type chips at the top
   Widget _buildAnimalTypeChip(String title, String imagePath) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      // Reduced horizontal margin
-      // height: 40, // Height is constrained by parent SizedBox
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      // Adjusted padding
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: darkbrown.withOpacity(0.5))),
-      child: Row(
-        mainAxisSize: MainAxisSize.min, // Take only necessary width
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            // Make circle slightly smaller
-            child: Image.asset(
-              imagePath,
-              height: 30, // Adjust size
-              width: 30, // Adjust size
-              fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: (){
+        setState(() {
+          category = title;
+        });
+        fetchProduct();
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        // Reduced horizontal margin
+        // height: 40, // Height is constrained by parent SizedBox
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        // Adjusted padding
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: darkbrown.withOpacity(0.5))),
+        child: Row(
+          mainAxisSize: MainAxisSize.min, // Take only necessary width
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              // Make circle slightly smaller
+              child: Image.asset(
+                imagePath,
+                height: 30, // Adjust size
+                width: 30, // Adjust size
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontSize: 13)),
-          // Slightly smaller text
-        ],
+            const SizedBox(width: 8),
+            Text(title, style: const TextStyle(fontSize: 13)),
+            // Slightly smaller text
+          ],
+        ),
       ),
-    );
+    ) ;
   }
 }
 

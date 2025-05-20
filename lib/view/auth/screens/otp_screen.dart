@@ -191,6 +191,7 @@ class _OtpScreenState extends State<OtpScreen> {
           children: [
             GestureDetector(
               onTap: () async {
+                print("OTP: ${widget.otpSend}");
                 if (otp.length == 4) {
                   // Add OTP submission logic here
                   if (otp == widget.otpSend) {

@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 //google location api
 const String ImageURL="https://pashuvyapar.in/tabela_wala/images/";
+const String banner_img="https://pashuvyapar.in/tabela_wala/banner_img/";
 const String VideoURL="https://pashuvyapar.in/tabela_wala/videos/";
 
 class AppSizes {
